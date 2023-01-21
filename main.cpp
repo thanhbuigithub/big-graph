@@ -32,14 +32,16 @@ void testGraph() {
 //    ofstream ws2("test.graph.bin", ios::out | ios::binary);
     ifstream rs1("test.graph.txt", ios::in);
     ifstream rs2("test.graph.bin", ios::in | ios::binary);
-    UDGraph* graph = new UDGraph();
-//    graph->addEdgeUpsert(4,7);
-//    graph->addEdgeUpsert(1,3);
-//    graph->addEdgeUpsert(1,2);
-//    graph->addEdgeUpsert(2,6);
-//    graph->addEdgeUpsert(2,4);
+    DGraph* graph = new DGraph();
+//    graph->addEdgeUpsert(4,0);
+//    graph->addEdgeUpsert(5,4);
+//    graph->addEdgeUpsert(5,2);
 //    graph->addEdgeUpsert(3,5);
-//    graph->addEdgeUpsert(4,8);
+//    graph->addEdgeUpsert(3,4);
+//    graph->addEdgeUpsert(2,3);
+//    graph->addEdgeUpsert(1,2);
+//    graph->addEdgeUpsert(0,1);
+//    graph->addEdgeUpsert(0,5);
 //    graph->writeTxt(ws1);
 //    graph->writeBin(ws2);
 //

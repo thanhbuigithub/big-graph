@@ -36,6 +36,8 @@ void ExeStop(
 #define Fail ExeStop(NULL, NULL, "Fail", __FILE__, __LINE__)
 #define FailR(Reason) ExeStop((Reason), NULL, "Fail", __FILE__, __LINE__)
 
+#define IAssertM(Message) InfoNotify(Message)
+
 #define IAssert(Cond, Message) \
   ((Cond) ? InfoNotify(Message) : static_cast<void>(0))
 

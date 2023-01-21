@@ -8,6 +8,7 @@
 #include <map>
 #include "Reader.h"
 #include "Writer.h"
+#include "Define.h"
 
 using namespace std;
 
@@ -33,6 +34,12 @@ public:
     virtual int getNbrNId(const int& index) const { return -1; };
     virtual int getInNbrNId(const int& index) const { return -1; };
     virtual int getOutNbrNId(const int& index) const { return -1; };
+    virtual vector<int> getNbrNIds() { return {}; }
+
+    /// Get neighbor index nth in node with ID `nid`.
+    virtual int getNbrIndex(const int& nid) { return -1; };
+    virtual int getInNbrIndex(const int& nid) { return -1; };
+    virtual int getOutNbrIndex(const int& nid) { return -1; };
 
     /// Check if a node with ID `node.id` is neighbor.
     bool isNbr(const Node& node) { return isNbrNId(node.id); };
@@ -106,6 +113,18 @@ public:
     int getNbrNId(const int& index) const override { return index < idV.size() ? idV[index] : -1; }
     int getInNbrNId(const int& index) const override { return getNbrNId(index); }
     int getOutNbrNId(const int& index) const override { return getNbrNId(index); }
+    vector<int> getNbrNIds() override {
+        vector<int> v = idV;
+        return v;
+    }
+
+    /// Get neighbor index nth in node with ID `nid`.
+    int getNbrIndex(const int& nid) override {
+        auto it1 = find(idV.begin(), idV.end(), nid);
+        return distance(idV.begin(), it1);
+    };
+    int getInNbrIndex(const int& nid) override { return getNbrIndex(nid); };
+    int getOutNbrIndex(const int& nid) override { return getNbrIndex(nid); };
 
     /// Check if a node with ID `nid` is neighbor node.
     bool isNbrNId(const int &nid) override;
@@ -158,7 +177,7 @@ public:
     friend class UDGraph;
 };
 
-class DNode : private Node {
+class DNode : public Node {
 private:
     vector<int> inIdV, outIdV;
 
@@ -178,6 +197,26 @@ public:
     int getNbrNId(const int& index) const override { return index < inIdV.size() ? inIdV[index] : (getOutNbrNId(index)); }
     int getInNbrNId(const int& index) const override { return index < inIdV.size() ? inIdV[index] : -1; }
     int getOutNbrNId(const int& index) const override { return index < outIdV.size() ? outIdV[index] : -1; }
+    vector<int> getNbrNIds() override {
+        vector<int> v {};
+        v.reserve( inIdV.size() + outIdV.size() ); // preallocate memory
+        v.insert( v.end(), inIdV.begin(), inIdV.end() );
+        v.insert( v.end(), outIdV.begin(), outIdV.end() );
+        return v;
+    }
+
+    /// Get neighbor index nth in node with ID `nid`.
+    int getNbrIndex(const int& nid) override {
+        return isInNbrNId(nid) ? getInNbrIndex(nid) : getOutNbrIndex(nid);
+    };
+    int getInNbrIndex(const int& nid) override {
+        auto it = find(inIdV.begin(), inIdV.end(), nid);
+        return distance(inIdV.begin(), it);
+    };
+    int getOutNbrIndex(const int& nid) override {
+        auto it = find(outIdV.begin(), outIdV.end(), nid);
+        return distance(outIdV.begin(), it);
+    };
 
     /// Check if a node with ID `nid` is neighbor node.
     bool isNbrNId(const int &nid) override { return isInNbrNId(nid) || isOutNbrNId(nid); };
@@ -200,7 +239,7 @@ public:
     void addOutNbrNId(const int& nid) override;
 
     /// Add a vector of neighbor node.
-    void addNbrNIds(const vector<int>& v) override { addInNbrNIds(v); addOutNbrNIds(v); };
+    void addNbrNIds(const vector<int>& v) override { IAssertM("Method `addNbrNIds` don't support for Directed Graph"); };
     void addInNbrNIds(const vector<int>& v) override;
     void addOutNbrNIds(const vector<int>& v) override;
 
@@ -228,6 +267,8 @@ public:
             os << i << " ";
         }
     }
+
+    friend class DGraph;
 };
 
 
@@ -235,9 +276,9 @@ public:
 template <typename T>
 class NodeI {
 private:
-
     typedef typename map<int, T>::const_iterator MapIterator;
     MapIterator nodeMI;
+
 public:
     NodeI() : nodeMI() {}
     NodeI(const MapIterator& it) : nodeMI(it) { }
@@ -254,6 +295,7 @@ public:
     /// Comparison
     bool operator < (const NodeI& ni) const { return std::distance(nodeMI, ni.nodeMI) > 0; }
     bool operator == (const NodeI& ni) const { return nodeMI == ni.nodeMI; }
+    bool operator != (const NodeI& ni) const { return nodeMI != ni.nodeMI; }
 
     /// Returns current node.
     T getNode() const { return nodeMI->second; };
@@ -285,5 +327,6 @@ public:
     bool IsOutNbrNId(const int& nid) const { return getNode().IsOutNbrNId(nid); }
 
     friend class UDGraph;
+    friend class DGraph;
 };
 #endif //BIGGRAPH_NODE_H
