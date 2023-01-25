@@ -6,6 +6,7 @@
 #define BIGGRAPH_NODE_H
 #include <vector>
 #include <map>
+#include <set>
 #include "Reader.h"
 #include "Writer.h"
 #include "Define.h"
@@ -38,9 +39,9 @@ public:
     virtual int getOutDeg() { return 0; };
 
     /// Get neighbor node.
-    virtual int getNbrNId(const int& index) const { return -1; };
-    virtual int getInNbrNId(const int& index) const { return -1; };
-    virtual int getOutNbrNId(const int& index) const { return -1; };
+    virtual int getNbrNId(const int& index) { return -1; };
+    virtual int getInNbrNId(const int& index) { return -1; };
+    virtual int getOutNbrNId(const int& index) { return -1; };
     virtual vector<int> getNbrNIds() { return {}; }
 
     /// Get neighbor index nth in node with ID `nid`.
@@ -99,7 +100,7 @@ template<typename DataType>
 class UDNode : public Node<DataType> {
 public:
     /// Vector of neighbor node id.
-    vector<int> idV;
+    set<int> idV;
 
     /// Constructor.
     UDNode(): Node<DataType>(), idV() {}
@@ -114,11 +115,19 @@ public:
     int getOutDeg() override { return getDeg(); };
 
     /// Get neighbor node.
-    int getNbrNId(const int& index) const override { return index < idV.size() ? idV[index] : -1; }
-    int getInNbrNId(const int& index) const override { return getNbrNId(index); }
-    int getOutNbrNId(const int& index) const override { return getNbrNId(index); }
+    int getNbrNId(const int& index) override {
+        if (index < idV.size()) {
+            auto it = idV.begin();
+            std::advance(it, index);
+            return *it;
+        }
+        return -1;
+    }
+    int getInNbrNId(const int& index) override { return getNbrNId(index); }
+    int getOutNbrNId(const int& index) override { return getNbrNId(index); }
     vector<int> getNbrNIds() override {
-        vector<int> v = idV;
+        vector<int> v;
+        copy(idV.begin(), idV.end(), v.begin());
         return v;
     }
 
@@ -182,7 +191,7 @@ template<typename DataType>
 class DNode : public Node<DataType> {
 public:
     /// Vector of in node ids and out node ids.
-    vector<int> inIdV, outIdV;
+    set<int> inIdV, outIdV;
 
     /// Constructor
     DNode(): Node<DataType>(), inIdV(), outIdV() {}
@@ -196,9 +205,23 @@ public:
     int getOutDeg() override { return outIdV.size(); };
 
     /// Get neighbor node.
-    int getNbrNId(const int& index) const override { return index < inIdV.size() ? inIdV[index] : (getOutNbrNId(index)); }
-    int getInNbrNId(const int& index) const override { return index < inIdV.size() ? inIdV[index] : -1; }
-    int getOutNbrNId(const int& index) const override { return index < outIdV.size() ? outIdV[index] : -1; }
+    int getNbrNId(const int& index) override { return index < inIdV.size() ? (getInNbrIndex(index)) : (getOutNbrNId(index)); }
+    int getInNbrNId(const int& index) override {
+        if (index < inIdV.size()) {
+            auto it = inIdV.begin();
+            std::advance(it, index);
+            return *it;
+        }
+        return -1;
+    }
+    int getOutNbrNId(const int& index) override {
+        if (index < outIdV.size()) {
+            auto it = outIdV.begin();
+            std::advance(it, index);
+            return *it;
+        }
+        return -1;
+    }
     vector<int> getNbrNIds() override {
         vector<int> v {};
         v.reserve( inIdV.size() + outIdV.size() ); // preallocate memory

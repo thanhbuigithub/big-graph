@@ -11,7 +11,7 @@ int UDNode<DataType>::getDeg() {
 
 template<class DataType>
 bool UDNode<DataType>::isNbrNId(const int &nid) {
-    return find(idV.begin(), idV.end(), nid) != idV.end();
+    return idV.find(nid) != idV.end();
 }
 
 template<class DataType>
@@ -19,7 +19,7 @@ void UDNode<DataType>::readBin(ifstream &rs) {
     Node<DataType>::readBin(rs);
     int size = Reader::readBinInt(rs, 0);
     for (int i = 0; i < size; ++i) {
-        idV.push_back(Reader::readBinInt(rs, -1));
+        idV.insert(Reader::readBinInt(rs, -1));
     }
 }
 
@@ -28,7 +28,7 @@ void UDNode<DataType>::readTxt(ifstream &rs) {
     Node<DataType>::readTxt(rs);
     int size = Reader::readTxtInt(rs, 0);
     for (int i = 0; i < size; ++i) {
-        idV.push_back(Reader::readTxtInt(rs, -1));
+        idV.insert(Reader::readTxtInt(rs, -1));
     }
 }
 
@@ -52,36 +52,30 @@ void UDNode<DataType>::writeTxt(ofstream &ws) {
 
 template<class DataType>
 void UDNode<DataType>::addNbrNId(const int &nid) {
-    idV.push_back(nid);
+    idV.insert(nid);
     sortNbrNId();
 }
 
 template<class DataType>
 void UDNode<DataType>::addNbrNIds(const vector<int> &v) {
-    idV.insert(idV.end(), v.begin(), v.end());
+    idV.insert(v.begin(), v.end());
     sortNbrNId();
 }
 
 template<class DataType>
 void UDNode<DataType>::delNbrNId(const int &nid) {
-    __wrap_iter<int*> i = find(idV.begin(), idV.end(), nid);
-    if (i != idV.end()) {
-        idV.erase(i);
-    }
+    idV.erase(nid);
 }
 
 template<class DataType>
 bool UDNode<DataType>::isSortedNbrNId() const {
-    if (idV.size() <= 1) return true;
-    for (int i = 0; i < idV.size() - 1; ++i) {
-        if (idV[i] > idV[i+1]) return false;
-    }
+    /// Set is always sorted
     return true;
 }
 
 template<class DataType>
 void UDNode<DataType>::sortNbrNId() {
-    sort(idV.begin(), idV.end());
+    /// Set is always sorted -> do nothing
 }
 
 template<class DataType>
@@ -89,11 +83,11 @@ void DNode<DataType>::readBin(ifstream &rs) {
     Node<DataType>::readBin(rs);
     int sizeIn = Reader::readBinInt(rs, 0);
     for (int i = 0; i < sizeIn; ++i) {
-        inIdV.push_back(Reader::readBinInt(rs, -1));
+        inIdV.insert(Reader::readBinInt(rs, -1));
     }
     int sizeOut = Reader::readBinInt(rs, 0);
     for (int i = 0; i < sizeOut; ++i) {
-        outIdV.push_back(Reader::readBinInt(rs, -1));
+        outIdV.insert(Reader::readBinInt(rs, -1));
     }
 }
 
@@ -102,11 +96,11 @@ void DNode<DataType>::readTxt(ifstream &rs) {
     Node<DataType>::readTxt(rs);
     int sizeIn = Reader::readTxtInt(rs, 0);
     for (int i = 0; i < sizeIn; ++i) {
-        inIdV.push_back(Reader::readTxtInt(rs, -1));
+        inIdV.insert(Reader::readTxtInt(rs, -1));
     }
     int sizeOut = Reader::readTxtInt(rs, 0);
     for (int i = 0; i < sizeOut; ++i) {
-        outIdV.push_back(Reader::readTxtInt(rs, -1));
+        outIdV.insert(Reader::readTxtInt(rs, -1));
     }
 }
 
@@ -138,78 +132,66 @@ void DNode<DataType>::writeTxt(ofstream &ws) {
 
 template<class DataType>
 bool DNode<DataType>::isInNbrNId(const int &nid) {
-    return find(inIdV.begin(), inIdV.end(), nid) != inIdV.end();
+    return inIdV.find(nid) != inIdV.end();
 }
 
 template<class DataType>
 bool DNode<DataType>::isOutNbrNId(const int &nid) {
-    return find(outIdV.begin(), outIdV.end(), nid) != outIdV.end();
+    return outIdV.find(nid) != outIdV.end();
 }
 
 template<class DataType>
 void DNode<DataType>::sortInNbrNId() {
-    sort(inIdV.begin(), inIdV.end());
+    /// Set is always sorted -> do nothing
 }
 
 template<class DataType>
 void DNode<DataType>::sortOutNbrNId() {
-    sort(outIdV.begin(), outIdV.end());
+    /// Set is always sorted -> do nothing
 }
 
 template<class DataType>
 bool DNode<DataType>::isSortedInNbrNId() const {
-    if (inIdV.size() <= 1) return true;
-    for (int i = 0; i < inIdV.size() - 1; ++i) {
-        if (inIdV[i] > inIdV[i+1]) return false;
-    }
+    /// Set is always sorted
     return true;
 }
 
 template<class DataType>
 bool DNode<DataType>::isSortedOutNbrNId() const {
-    if (outIdV.size() <= 1) return true;
-    for (int i = 0; i < outIdV.size() - 1; ++i) {
-        if (outIdV[i] > outIdV[i+1]) return false;
-    }
+    /// Set is always sorted
     return true;
 }
 
 template<class DataType>
 void DNode<DataType>::addInNbrNId(const int &nid) {
-    inIdV.push_back(nid);
+    inIdV.insert(nid);
     sortInNbrNId();
 }
 
 template<class DataType>
 void DNode<DataType>::addOutNbrNId(const int &nid) {
-    outIdV.push_back(nid);
+    outIdV.insert(nid);
     sortOutNbrNId();
 }
 
 template<class DataType>
 void DNode<DataType>::addInNbrNIds(const vector<int> &v) {
-    inIdV.insert(inIdV.end(), v.begin(), v.end());
+    inIdV.insert(v.begin(), v.end());
     sortInNbrNId();
 }
 
 template<class DataType>
 void DNode<DataType>::addOutNbrNIds(const vector<int> &v) {
-    outIdV.insert(outIdV.end(), v.begin(), v.end());
+    outIdV.insert(v.begin(), v.end());
     sortOutNbrNId();
 }
 
 template<class DataType>
 void DNode<DataType>::delInNbrNId(const int &nid) {
-    __wrap_iter<int*> i = find(inIdV.begin(), inIdV.end(), nid);
-    if (i != inIdV.end()) {
-        inIdV.erase(i);
-    }
+    inIdV.erase(nid);
 }
 
 template<class DataType>
 void DNode<DataType>::delOutNbrNId(const int &nid) {
-    __wrap_iter<int*> i = find(outIdV.begin(), outIdV.end(), nid);
-    if (i != outIdV.end()) {
-        outIdV.erase(i);
-    }
+    outIdV.erase(nid);
 }

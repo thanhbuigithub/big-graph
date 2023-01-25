@@ -28,11 +28,11 @@ void testImportBin(UDNode<int>* test) {
 }
 
 void testGraph() {
-//    ofstream ws1("test.graph.txt", ios::out);
-//    ofstream ws2("test.graph.bin", ios::out | ios::binary);
+    ofstream ws1("test.graph.txt", ios::out);
+    ofstream ws2("test.graph.bin", ios::out | ios::binary);
 //    ifstream rs1("test.graph.txt", ios::in);
 //    ifstream rs2("test.graph.bin", ios::in | ios::binary);
-    auto* graph = new DGraph<int>();
+    auto* graph = new UDGraph<int>();
     graph->addEdgeUpsert(4,0);
     graph->addEdgeUpsert(5,4);
     graph->addEdgeUpsert(5,2);
@@ -42,16 +42,16 @@ void testGraph() {
     graph->addEdgeUpsert(1,2);
     graph->addEdgeUpsert(0,1);
     graph->addEdgeUpsert(0,5);
-//    graph->writeTxt(ws1);
-//    graph->writeBin(ws2);
+    graph->writeTxt(ws1);
+    graph->writeBin(ws2);
 //
 //    graph->readTxt(rs1);
 //    graph->print(cout);
 //    graph->readBin(rs2);
-    graph->print(cout);
+//    graph->print(cout);
 
-//    ws1.close();
-//    ws2.close();
+    ws1.close();
+    ws2.close();
 //    rs1.close();
 //    rs2.close();
 }
