@@ -51,15 +51,12 @@ public:
     void print(ostream &os) const {
         os << getSrcNId() << "\t" << getDstNId();
     }
-
-    friend class UDGraph;
-    friend class DGraph;
 };
 
-template<>
-class EdgeI<UDNode> : Writer {
+template<typename DataType>
+class EdgeI<UDNode<DataType>> : Writer {
 private:
-    typedef NodeI<UDNode> NodeI;
+    typedef NodeI<UDNode<DataType>> NodeI;
     NodeI curNodeI, endNodeI;
     int curEdge;
 public:
@@ -70,7 +67,7 @@ public:
     EdgeI& operator = (const EdgeI& it) { if (this!=&it) { curNodeI=it.curNodeI; endNodeI=it.endNodeI; curEdge=it.curEdge; } return *this; }
 
     /// Increment iterator.
-    EdgeI<UDNode>& operator++(int) {
+    EdgeI<UDNode<DataType>>& operator++(int) {
         do {
             curEdge++;
             if (curEdge >= curNodeI.getOutDeg()) {
@@ -110,15 +107,12 @@ public:
     void print(ostream &os) const {
         os << getSrcNId() << "\t" << getDstNId();
     }
-
-    friend class UDGraph;
-    friend class DGraph;
 };
 
-template<>
-class EdgeI<DNode> : Writer {
+template<typename DataType>
+class EdgeI<DNode<DataType>> : Writer {
 private:
-    typedef NodeI<DNode> NodeI;
+    typedef NodeI<DNode<DataType>> NodeI;
     NodeI curNodeI, endNodeI;
     int curEdge;
 public:
@@ -129,7 +123,7 @@ public:
     EdgeI& operator = (const EdgeI& it) { if (this!=&it) { curNodeI=it.curNodeI; endNodeI=it.endNodeI; curEdge=it.curEdge; } return *this; }
 
     /// Increment iterator.
-    EdgeI<DNode>& operator++(int) {
+    EdgeI<DNode<DataType>>& operator++(int) {
         curEdge++;
         if (curEdge >= curNodeI.getOutDeg()) {
             curEdge = 0;
@@ -167,9 +161,6 @@ public:
     void print(ostream &os) const {
         os << getSrcNId() << "\t" << getDstNId();
     }
-
-    friend class UDGraph;
-    friend class DGraph;
 };
 
 #endif //BIGGRAPH_EDGE_H

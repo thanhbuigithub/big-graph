@@ -105,26 +105,25 @@ public:
 
     /// Print the graph.
     void print(ostream &os);
-
-    friend class UDGraph;
-    friend class DGraph;
 };
 
-class UDGraph : public Graph<UDNode> {
+template<typename DataType>
+class UDGraph : public Graph<UDNode<DataType>> {
 public:
-    UDGraph(): Graph() {}
-    UDGraph(int&n): Graph(n) {}
-    UDGraph(UDGraph& udGraph): Graph(udGraph) {}
+    UDGraph(): Graph<UDNode<DataType>>() {}
+    UDGraph(int&n): Graph<UDNode<DataType>>(n) {}
+    UDGraph(UDGraph& udGraph): Graph<UDNode<DataType>>(udGraph) {}
 
     /// Checks the graph data structure for internal consistency.
     bool isOk() const override;
 };
 
-class DGraph : public Graph<DNode> {
+template<typename DataType>
+class DGraph : public Graph<DNode<DataType>> {
 public:
-    DGraph(): Graph() {}
-    DGraph(int&n): Graph(n) {}
-    DGraph(DGraph& dGraph): Graph(dGraph) {}
+    DGraph(): Graph<DNode<DataType>>() {}
+    DGraph(int&n): Graph<DNode<DataType>>(n) {}
+    DGraph(DGraph& dGraph): Graph<DNode<DataType>>(dGraph) {}
 
     /// Checks the graph data structure for internal consistency.
     bool isOk() const override { return true; };

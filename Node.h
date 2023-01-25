@@ -12,18 +12,25 @@
 
 using namespace std;
 
+template<typename DataType>
 class Node : public Reader, public Writer {
 protected:
     int id;
+    DataType dat;
 
 public:
     /// Constructor.
-    Node(): id(-1) {}
-    Node(const int& id): id(id) {}
-    Node(const Node& node): id(node.id) {}
+    Node(): id(-1), dat() {}
+    Node(const int& id): id(id), dat() {}
+    Node(const int& id, const DataType& dat): id(id), dat(dat) {}
+    Node(const Node& node): id(node.id), dat(node.dat) {}
 
     /// Id.
     int getId() const { return id; }
+
+    /// Data.
+    DataType getData() const { return dat; }
+    int setData(const DataType& data) { return dat = data; }
 
     /// Degree.
     virtual int getDeg() { return 0; };
@@ -52,9 +59,9 @@ public:
     virtual bool isOutNbrNId(const int& nid) { return false; };
 
     /// Sort vector of neighbor node.
-    virtual void sortNbrNId() = 0;
-    virtual void sortInNbrNId() = 0;
-    virtual void sortOutNbrNId() = 0;
+    virtual void sortNbrNId() {};
+    virtual void sortInNbrNId() {};
+    virtual void sortOutNbrNId() {};
 
     /// Check if vector of neighbor node is sorted.
     virtual bool isSortedNbrNId() const { return false; };
@@ -62,14 +69,14 @@ public:
     virtual bool isSortedOutNbrNId() const { return false; };
 
     /// Add a neighbor node.
-    virtual void addNbrNId(const int& nid) = 0;
-    virtual void addInNbrNId(const int& nid) = 0;
-    virtual void addOutNbrNId(const int& nid) = 0;
+    virtual void addNbrNId(const int& nid) {};
+    virtual void addInNbrNId(const int& nid) {};
+    virtual void addOutNbrNId(const int& nid) {};
 
     /// Add a vector of neighbor node.
-    virtual void addNbrNIds(const vector<int>& v) = 0;
-    virtual void addInNbrNIds(const vector<int>& v) = 0;
-    virtual void addOutNbrNIds(const vector<int>& v) = 0;
+    virtual void addNbrNIds(const vector<int>& v) {};
+    virtual void addInNbrNIds(const vector<int>& v) {};
+    virtual void addOutNbrNIds(const vector<int>& v) {};
 
     /// Delete a neighbor node.
     virtual void delNbrNId(const int& nid) = 0;
@@ -86,23 +93,20 @@ public:
 
     /// Print console.
     virtual void print(ostream& os) { os << id; }
-
-    /// Friend class.
-    friend class UDNode;
-    friend class DNode;
 };
 
-class UDNode : public Node {
-private:
+template<typename DataType>
+class UDNode : public Node<DataType> {
+public:
     /// Vector of neighbor node id.
     vector<int> idV;
 
-public:
     /// Constructor.
-    UDNode(): Node(), idV() {}
-    UDNode(const int& id): Node(id), idV() {}
-    UDNode(const Node& node): Node(node.id), idV() {}
-    UDNode(const UDNode& udNode): Node(udNode.id), idV(udNode.idV) {}
+    UDNode(): Node<DataType>(), idV() {}
+    UDNode(const int& id): Node<DataType>(id), idV() {}
+    UDNode(const int& id, const DataType& data): Node<DataType>(id, data), idV() {}
+    UDNode(const Node<DataType>& node): Node<DataType>(node.id), idV() {}
+    UDNode(const UDNode& udNode): Node<DataType>(udNode.id), idV(udNode.idV) {}
 
     /// Degree.
     int getDeg() override;
@@ -166,27 +170,25 @@ public:
 
     /// Print console.
     void print(ostream &os) override {
-        Node::print(os);
+        Node<DataType>::print(os);
         os << " " << idV.size() << endl;
         for (int i : idV) {
             os << i << " ";
         }
     }
-
-    /// Friend Class.
-    friend class UDGraph;
 };
 
-class DNode : public Node {
-private:
+template<typename DataType>
+class DNode : public Node<DataType> {
+public:
+    /// Vector of in node ids and out node ids.
     vector<int> inIdV, outIdV;
 
-public:
     /// Constructor
-    DNode(): Node(), inIdV(), outIdV() {}
-    DNode(const int& id): Node(id), inIdV(), outIdV() {}
-    DNode(const Node& node): Node(node.id), inIdV(), outIdV() {}
-    DNode(const DNode& dNode): Node(dNode.id), inIdV(dNode.inIdV), outIdV(dNode.outIdV) {}
+    DNode(): Node<DataType>(), inIdV(), outIdV() {}
+    DNode(const int& id): Node<DataType>(id), inIdV(), outIdV() {}
+    DNode(const Node<DataType>& node): Node<DataType>(node.id), inIdV(), outIdV() {}
+    DNode(const DNode& dNode): Node<DataType>(dNode.id), inIdV(dNode.inIdV), outIdV(dNode.outIdV) {}
 
     /// Degree.
     int getDeg() override { return getInDeg() + getOutDeg(); };
@@ -258,7 +260,7 @@ public:
 
     /// Print console.
     void print(ostream &os) override {
-        Node::print(os);
+        Node<DataType>::print(os);
         os << " " << inIdV.size() << " " << outIdV.size() << endl;
         for (int i : inIdV) {
             os << i << " ";
@@ -267,8 +269,6 @@ public:
             os << i << " ";
         }
     }
-
-    friend class DGraph;
 };
 
 
@@ -325,8 +325,7 @@ public:
     bool isInNbrNId(const int& nid) const { return getNode().isInNbrNId(nid); }
     /// Tests whether the current node points to node with ID NId.
     bool IsOutNbrNId(const int& nid) const { return getNode().IsOutNbrNId(nid); }
-
-    friend class UDGraph;
-    friend class DGraph;
 };
+
+#include "Node.tpp"
 #endif //BIGGRAPH_NODE_H
