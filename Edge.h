@@ -53,10 +53,9 @@ public:
     }
 };
 
-template<typename DataType>
-class EdgeI<UDNode<DataType>> : Writer {
+template<> class EdgeI<UDNode> : Writer {
 private:
-    typedef NodeI<UDNode<DataType>> NodeI;
+    typedef NodeI<UDNode> NodeI;
     NodeI curNodeI, endNodeI;
     int curEdge;
 public:
@@ -67,7 +66,7 @@ public:
     EdgeI& operator = (const EdgeI& it) { if (this!=&it) { curNodeI=it.curNodeI; endNodeI=it.endNodeI; curEdge=it.curEdge; } return *this; }
 
     /// Increment iterator.
-    EdgeI<UDNode<DataType>>& operator++(int) {
+    EdgeI<UDNode>& operator++(int) {
         do {
             curEdge++;
             if (curEdge >= curNodeI.getOutDeg()) {
@@ -109,10 +108,9 @@ public:
     }
 };
 
-template<typename DataType>
-class EdgeI<DNode<DataType>> : Writer {
+template<> class EdgeI<DNode> : Writer {
 private:
-    typedef NodeI<DNode<DataType>> NodeI;
+    typedef NodeI<DNode> NodeI;
     NodeI curNodeI, endNodeI;
     int curEdge;
 public:
@@ -123,7 +121,7 @@ public:
     EdgeI& operator = (const EdgeI& it) { if (this!=&it) { curNodeI=it.curNodeI; endNodeI=it.endNodeI; curEdge=it.curEdge; } return *this; }
 
     /// Increment iterator.
-    EdgeI<DNode<DataType>>& operator++(int) {
+    EdgeI<DNode>& operator++(int) {
         curEdge++;
         if (curEdge >= curNodeI.getOutDeg()) {
             curEdge = 0;

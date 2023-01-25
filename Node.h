@@ -13,25 +13,43 @@
 
 using namespace std;
 
-template<typename DataType>
+/// Abstract class for data in Node.
+class NodeData {
+public:
+    /// Read and Write Bin.
+    virtual void readBin(ifstream& rs) {};
+    virtual void writeBin(ofstream& ws) {};
+
+    /// Read and Write Txt.
+    virtual void readTxt(ifstream& rs) {};
+    virtual void writeTxt(ofstream& ws) {};
+
+    /// Operator.
+    virtual NodeData& operator = (const NodeData& ni) { return *this; }
+
+    /// Print console.
+    virtual void print(ostream& os) { }
+};
+
 class Node : public Reader, public Writer {
 protected:
     int id;
-    DataType dat;
+    NodeData dat;
 
 public:
     /// Constructor.
     Node(): id(-1), dat() {}
     Node(const int& id): id(id), dat() {}
-    Node(const int& id, const DataType& dat): id(id), dat(dat) {}
+    Node(const int& id, const NodeData& dat): id(id), dat(dat) {}
+    Node(const NodeData& dat): id(-1), dat(dat) {}
     Node(const Node& node): id(node.id), dat(node.dat) {}
 
     /// Id.
     int getId() const { return id; }
 
     /// Data.
-    DataType getData() const { return dat; }
-    int setData(const DataType& data) { return dat = data; }
+    NodeData getData() const { return dat; }
+    void setData(NodeData data) { dat = data; }
 
     /// Degree.
     virtual int getDeg() { return 0; };
@@ -96,18 +114,18 @@ public:
     virtual void print(ostream& os) { os << id; }
 };
 
-template<typename DataType>
-class UDNode : public Node<DataType> {
+class UDNode : public Node {
 public:
     /// Vector of neighbor node id.
     set<int> idV;
 
     /// Constructor.
-    UDNode(): Node<DataType>(), idV() {}
-    UDNode(const int& id): Node<DataType>(id), idV() {}
-    UDNode(const int& id, const DataType& data): Node<DataType>(id, data), idV() {}
-    UDNode(const Node<DataType>& node): Node<DataType>(node.id), idV() {}
-    UDNode(const UDNode& udNode): Node<DataType>(udNode.id), idV(udNode.idV) {}
+    UDNode(): Node(), idV() {}
+    UDNode(const int& id): Node(id), idV() {}
+    UDNode(const int& id, const NodeData& data): Node(id, data), idV() {}
+    UDNode(const NodeData& data): Node(data), idV() {}
+    UDNode(const Node& node): Node(node.getId()), idV() {}
+    UDNode(const UDNode& udNode): Node(udNode.id), idV(udNode.idV) {}
 
     /// Degree.
     int getDeg() override;
@@ -179,7 +197,7 @@ public:
 
     /// Print console.
     void print(ostream &os) override {
-        Node<DataType>::print(os);
+        Node::print(os);
         os << " " << idV.size() << endl;
         for (int i : idV) {
             os << i << " ";
@@ -187,17 +205,18 @@ public:
     }
 };
 
-template<typename DataType>
-class DNode : public Node<DataType> {
+class DNode : public Node {
 public:
     /// Vector of in node ids and out node ids.
     set<int> inIdV, outIdV;
 
     /// Constructor
-    DNode(): Node<DataType>(), inIdV(), outIdV() {}
-    DNode(const int& id): Node<DataType>(id), inIdV(), outIdV() {}
-    DNode(const Node<DataType>& node): Node<DataType>(node.id), inIdV(), outIdV() {}
-    DNode(const DNode& dNode): Node<DataType>(dNode.id), inIdV(dNode.inIdV), outIdV(dNode.outIdV) {}
+    DNode(): Node(), inIdV(), outIdV() {}
+    DNode(const int& id): Node(id), inIdV(), outIdV() {}
+    DNode(const int& id, const NodeData& data): Node(id, data), inIdV(), outIdV() {}
+    DNode(const NodeData& data): Node(data), inIdV(), outIdV() {}
+    DNode(const Node& node): Node(node.getId()), inIdV(), outIdV() {}
+    DNode(const DNode& dNode): Node(dNode.id), inIdV(dNode.inIdV), outIdV(dNode.outIdV) {}
 
     /// Degree.
     int getDeg() override { return getInDeg() + getOutDeg(); };
@@ -283,7 +302,7 @@ public:
 
     /// Print console.
     void print(ostream &os) override {
-        Node<DataType>::print(os);
+        Node::print(os);
         os << " " << inIdV.size() << " " << outIdV.size() << endl;
         for (int i : inIdV) {
             os << i << " ";
@@ -350,5 +369,4 @@ public:
     bool IsOutNbrNId(const int& nid) const { return getNode().IsOutNbrNId(nid); }
 };
 
-#include "Node.tpp"
 #endif //BIGGRAPH_NODE_H

@@ -1,27 +1,28 @@
 #include <iostream>
 #include <unordered_map>
 #include "Node.h"
+#include "NodeDataType.h"
 #include "Graph.h"
 
-void testExportTxt(UDNode<int>* test) {
+void testExportTxt(UDNode* test) {
     ofstream ws("test.graph.txt", ios::out);
     test->writeTxt(ws);
     ws.close();
 }
 
-void testImportTxt(UDNode<int>* test) {
+void testImportTxt(UDNode* test) {
     ifstream rs("test.graph.txt", ios::in);
     test->readTxt(rs);
     rs.close();
 }
 
-void testExportBin(UDNode<int>* test) {
+void testExportBin(UDNode* test) {
     ofstream ws("test.graph.bin", ios::out);
     test->writeBin(ws);
     ws.close();
 }
 
-void testImportBin(UDNode<int>* test) {
+void testImportBin(UDNode* test) {
     ifstream rs("test.graph.bin", ios::in);
     test->readBin(rs);
     rs.close();
@@ -32,24 +33,24 @@ void testGraph() {
     ofstream ws2("test.graph.bin", ios::out | ios::binary);
 //    ifstream rs1("test.graph.txt", ios::in);
 //    ifstream rs2("test.graph.bin", ios::in | ios::binary);
-    auto* graph = new UDGraph<int>();
-    graph->addEdgeUpsert(4,0);
-    graph->addEdgeUpsert(5,4);
-    graph->addEdgeUpsert(5,2);
-    graph->addEdgeUpsert(3,5);
-    graph->addEdgeUpsert(3,4);
-    graph->addEdgeUpsert(2,3);
-    graph->addEdgeUpsert(1,2);
-    graph->addEdgeUpsert(0,1);
-    graph->addEdgeUpsert(0,5);
+    auto* graph = new UDGraph();
+    graph->addEdge(NodeDataInt(4), NodeDataInt(0));
+//    graph->addEdgeUpsert(5,4);
+//    graph->addEdgeUpsert(5,2);
+//    graph->addEdgeUpsert(3,5);
+//    graph->addEdgeUpsert(3,4);
+//    graph->addEdgeUpsert(2,3);
+//    graph->addEdgeUpsert(1,2);
+//    graph->addEdgeUpsert(0,1);
+//    graph->addEdgeUpsert(0,5);
     graph->writeTxt(ws1);
     graph->writeBin(ws2);
 //
 //    graph->readTxt(rs1);
 //    graph->print(cout);
 //    graph->readBin(rs2);
-//    graph->print(cout);
-
+    graph->print(cout);
+    cout << graph->isOk();
     ws1.close();
     ws2.close();
 //    rs1.close();
