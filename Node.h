@@ -17,39 +17,36 @@ using namespace std;
 class NodeData {
 public:
     /// Read and Write Bin.
-    virtual void readBin(ifstream& rs) {};
-    virtual void writeBin(ofstream& ws) {};
+    virtual void readBin(ifstream& rs) = 0;
+    virtual void writeBin(ofstream& ws) = 0;
 
     /// Read and Write Txt.
-    virtual void readTxt(ifstream& rs) {};
-    virtual void writeTxt(ofstream& ws) {};
-
-    /// Operator.
-    virtual NodeData& operator = (const NodeData& ni) { return *this; }
+    virtual void readTxt(ifstream& rs) = 0;
+    virtual void writeTxt(ofstream& ws) = 0;
 
     /// Print console.
-    virtual void print(ostream& os) { }
+    virtual void print(ostream& os) = 0;
 };
 
 class Node : public Reader, public Writer {
 protected:
     int id;
-    NodeData dat;
+    NodeData* dat;
 
 public:
     /// Constructor.
-    Node(): id(-1), dat() {}
-    Node(const int& id): id(id), dat() {}
-    Node(const int& id, const NodeData& dat): id(id), dat(dat) {}
-    Node(const NodeData& dat): id(-1), dat(dat) {}
-    Node(const Node& node): id(node.id), dat(node.dat) {}
+    Node(): id(-1), dat(nullptr) {}
+    Node(const int& id): id(id), dat(nullptr) {}
+    Node(const int& id, NodeData* dat): id(id), dat(dat) {}
+    Node(NodeData* dat): id(-1), dat(dat) {}
+    Node(Node* node): id(node->id), dat(node->dat) {}
 
     /// Id.
     int getId() const { return id; }
 
     /// Data.
-    NodeData getData() const { return dat; }
-    void setData(NodeData data) { dat = data; }
+    NodeData* getData() const { return dat; }
+    void setData(NodeData* data) { dat = data; }
 
     /// Degree.
     virtual int getDeg() { return 0; };
@@ -122,10 +119,10 @@ public:
     /// Constructor.
     UDNode(): Node(), idV() {}
     UDNode(const int& id): Node(id), idV() {}
-    UDNode(const int& id, const NodeData& data): Node(id, data), idV() {}
-    UDNode(const NodeData& data): Node(data), idV() {}
-    UDNode(const Node& node): Node(node.getId()), idV() {}
-    UDNode(const UDNode& udNode): Node(udNode.id), idV(udNode.idV) {}
+    UDNode(const int& id, NodeData* data): Node(id, data), idV() {}
+    UDNode(NodeData* data): Node(data), idV() {}
+    UDNode(Node* node): Node(node->getId()), idV() {}
+    UDNode(UDNode* udNode): Node(udNode->id), idV(udNode->idV) {}
 
     /// Degree.
     int getDeg() override;
@@ -151,7 +148,7 @@ public:
 
     /// Get neighbor index nth in node with ID `nid`.
     int getNbrIndex(const int& nid) override {
-        auto it1 = find(idV.begin(), idV.end(), nid);
+        auto it1 = idV.find(nid);
         return distance(idV.begin(), it1);
     };
     int getInNbrIndex(const int& nid) override { return getNbrIndex(nid); };
@@ -213,10 +210,10 @@ public:
     /// Constructor
     DNode(): Node(), inIdV(), outIdV() {}
     DNode(const int& id): Node(id), inIdV(), outIdV() {}
-    DNode(const int& id, const NodeData& data): Node(id, data), inIdV(), outIdV() {}
-    DNode(const NodeData& data): Node(data), inIdV(), outIdV() {}
-    DNode(const Node& node): Node(node.getId()), inIdV(), outIdV() {}
-    DNode(const DNode& dNode): Node(dNode.id), inIdV(dNode.inIdV), outIdV(dNode.outIdV) {}
+    DNode(const int& id, NodeData* data): Node(id, data), inIdV(), outIdV() {}
+    DNode(NodeData* data): Node(data), inIdV(), outIdV() {}
+    DNode(Node* node): Node(node->getId()), inIdV(), outIdV() {}
+    DNode(DNode* dNode): Node(dNode->id), inIdV(dNode->inIdV), outIdV(dNode->outIdV) {}
 
     /// Degree.
     int getDeg() override { return getInDeg() + getOutDeg(); };
@@ -254,11 +251,11 @@ public:
         return isInNbrNId(nid) ? getInNbrIndex(nid) : getOutNbrIndex(nid);
     };
     int getInNbrIndex(const int& nid) override {
-        auto it = find(inIdV.begin(), inIdV.end(), nid);
+        auto it = inIdV.find(nid);
         return distance(inIdV.begin(), it);
     };
     int getOutNbrIndex(const int& nid) override {
-        auto it = find(outIdV.begin(), outIdV.end(), nid);
+        auto it = outIdV.find(nid);
         return distance(outIdV.begin(), it);
     };
 
@@ -316,7 +313,7 @@ public:
 
 /// Node iterator. Only forward iteration (operator++) is supported.
 template <typename T>
-class NodeI {
+class NodeI : Writer {
 private:
     typedef typename map<int, T>::const_iterator MapIterator;
     MapIterator nodeMI;
@@ -343,6 +340,8 @@ public:
     T getNode() const { return nodeMI->second; };
     /// Returns ID of the current node.
     int getId() const { return getNode().getId(); }
+    /// Returns ID of the current node.
+    NodeData* getData() const { return getNode().getData(); }
     /// Returns degree of the current node.
     int getDeg() const { return getNode().getDeg(); }
     /// Returns in-degree of the current node (returns same as value GetDeg() since the graph is undirected).
@@ -367,6 +366,16 @@ public:
     bool isInNbrNId(const int& nid) const { return getNode().isInNbrNId(nid); }
     /// Tests whether the current node points to node with ID NId.
     bool IsOutNbrNId(const int& nid) const { return getNode().IsOutNbrNId(nid); }
+
+    void writeBin(ofstream &ws) override {
+        writeBinInt(ws, getId());
+        getData()->writeBin(ws);
+    }
+    void writeTxt(ofstream &ws) override {
+        writeTxtInt(ws, getId());
+        writeTxtChar(ws, ",");
+        getData()->writeTxt(ws);
+    }
 };
 
 #endif //BIGGRAPH_NODE_H

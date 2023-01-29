@@ -5,6 +5,7 @@
 #ifndef BIGGRAPH_READER_H
 #define BIGGRAPH_READER_H
 #include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -15,6 +16,9 @@ public:
 
     static int readBinInt(ifstream& rs, const int& defaultValue);
     static int readTxtInt(ifstream& rs, const int& defaultValue);
+
+    static string readBinString(ifstream& rs, string defaultValue);
+    static string readTxtString(ifstream& rs, string defaultValue);
 };
 
 

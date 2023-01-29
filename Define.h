@@ -6,6 +6,8 @@
 #define BIGGRAPH_DEFINE_H
 
 #include <string>
+#include <stdexcept>
+#include <memory>
 
 // Messages
 void notify(const char* title, const char* message);

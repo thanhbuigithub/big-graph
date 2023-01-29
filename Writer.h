@@ -14,8 +14,11 @@ public:
     virtual void writeTxt(ofstream& ws) {}
 
     static bool writeBinInt(ofstream& ws, const int& value);
-    static bool writeTxtInt(ofstream& ws, const int& value, const string& delimiter = " ");
+    static bool writeTxtInt(ofstream& ws, const int& value, const string& delimiter = "");
     static bool writeTxtChar(ofstream& ws, char const *c);
+
+    static bool writeBinString(ofstream& ws, string value);
+    static bool writeTxtString(ofstream& ws, string value, const string& delimiter = "");
 };
 
 

@@ -10,6 +10,7 @@
 #include "Edge.h"
 #include "Define.h"
 #include <cmath>
+#include "NodeDataType.h"
 
 using namespace std;
 
@@ -34,7 +35,9 @@ public:
     /// Adds a node with ID `nid` to the graph. Return ID of the node.
     int addNode(int nid = -1);
     /// Adds a node with data `dat` to the graph. Return ID of the node.
-    int addNode(NodeData dat);
+    int addNode(NodeData* dat);
+    /// Adds a node with ID `nid` and data `dat` to the graph. Return ID of the node.
+    int addNode(int nid, NodeData* dat);
     /// Adds a node with ID `node.getId()` to the graph. Return ID of the node.
     int addNode(const T& node);
     /// Adds a node with ID `nid` to the graph and creates edges to it from all nodes in vector `inIdV` and ``outIdV`. Return ID of the node.
@@ -60,11 +63,11 @@ public:
     /// Adds an edge between node `srcId` and node `dstId` to the graph. Return `true` if add successful
     bool addEdge(const int& srcNId, const int& dstNId);
     /// Adds an edge between node with `srcData` and node with `dstData` to the graph. Return `true` if add successful
-    bool addEdge(NodeData srcData, NodeData dstData);
+    bool addEdge(NodeData* srcData, NodeData* dstData);
     /// Adds an edge between node `srcId` and node `dstId` to the graph. If any of nodes do not exist, create them. Return `true` if add successful
     bool addEdgeUpsert(const int& srcNId, const int& dstNId);
     /// Adds an edge between node `srcId` with `srcData` and node `dstId` with `dstData` to the graph. Return `true` if add successful
-    bool addEdgeUpsert(const int& srcNId, NodeData srcData, const int& dstNId, NodeData dstData);
+    bool addEdgeUpsert(const int& srcNId, NodeData* srcData, const int& dstNId, NodeData* dstData);
     /// Deletes an edge between node `srcId` and node `dstId` from the graph.
     void delEdge(const int& srcNId, const int& dstNId);
     /// Tests whether an edge between node `srcId` and node `dstId` exists in the graph.

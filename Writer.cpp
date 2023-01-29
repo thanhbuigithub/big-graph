@@ -21,3 +21,17 @@ bool Writer::writeTxtChar(ofstream &ws, char const *c) {
     ws << c;
     return !ws.bad();
 }
+
+bool Writer::writeBinString(ofstream &ws, string value) {
+    if (!ws || !ws.is_open() || ws.bad()) return false;
+    int size = value.size();
+    ws.write((char *) &size, sizeof(int));
+    ws.write((char *) &value, sizeof(char*) * size);
+    return !ws.bad();
+}
+
+bool Writer::writeTxtString(ofstream &ws, string value, const string &delimiter) {
+    if (!ws || !ws.is_open() || ws.bad()) return false;
+    ws << delimiter << value;
+    return !ws.bad();
+}

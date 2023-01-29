@@ -19,12 +19,26 @@ int Graph<T>::addNode(int nid) {
 }
 
 template<class T>
-int Graph<T>::addNode(NodeData dat) {
+int Graph<T>::addNode(NodeData* dat) {
     int nid = getAutoIId();
     IAssert(isNode(nid), string_format("Failed to generate auto id. Nid exists: %d", nid).c_str());
     if (!isNode(nid)) {
         nodeM.insert(pair(nid, T(nid, dat)));
     }
+    return nid;
+}
+
+template<class T>
+int Graph<T>::addNode(int nid, NodeData* dat) {
+    if (nid == -1) {
+        nid = getAutoIId();
+    }
+    IAssert(isNode(nid), string_format("node id %d already exists", nid).c_str());
+    if (isNode(nid)) {
+        autoIId = max(autoIId, nid+1);
+        return nid;
+    }
+    nodeM.insert(pair(nid, T(nid, dat)));
     return nid;
 }
 
@@ -115,7 +129,11 @@ bool Graph<T>::isEdge(const int &srcNId, const int &dstNId) {
 
 template<class T>
 void Graph<T>::writeBin(ofstream &ws) {
+    writeBinInt(ws, getNodes());
     writeBinInt(ws, getEdges());
+    for (NodeI ni = beginNI(); ni < endNI(); ni++) {
+        ni.writeBin(ws);
+    }
     for (EdgeI ei = beginEI(); ei < endEI(); ei++) {
         ei.writeBin(ws);
     }
@@ -123,24 +141,51 @@ void Graph<T>::writeBin(ofstream &ws) {
 
 template<class T>
 void Graph<T>::writeTxt(ofstream &ws) {
+    writeTxtInt(ws, getNodes());
+    writeTxtChar(ws, "\n");
+    for (NodeI ni = beginNI(); ni < endNI(); ni++) {
+        if (ni != beginNI()) writeTxtChar(ws, "\n");
+        ni.writeTxt(ws);
+    }
     for (EdgeI ei = beginEI(); ei < endEI(); ei++) {
-        if (ei != beginEI()) writeTxtChar(ws, "\n");
+        writeTxtChar(ws, "\n");
         ei.writeTxt(ws);
     }
 }
 
 template<class T>
 void Graph<T>::readBin(ifstream &rs) {
-    int size = readBinInt(rs, 0);
-    for (int i = 0; i < size; ++i) {
+    int nodes = readBinInt(rs, 0);
+    int edges = readBinInt(rs, 0);
+    for (int i = 0; i < nodes; ++i) {
+        int id = readBinInt(rs, -1);
+        auto data = new NodeDataString();
+        data->readBin(rs);
+        addNode(id, data);
+    }
+    for (int i = 0; i < edges; ++i) {
         int srcNId = readBinInt(rs, -1);
         int dstNId = readBinInt(rs, -1);
-        addEdgeUpsert(srcNId, dstNId);
+        addEdge(srcNId, dstNId);
     }
 }
 
 template<class T>
 void Graph<T>::readTxt(ifstream &rs) {
+    int nodes = readTxtInt(rs, 0);
+    if (nodes <= 0) return;
+    string dat;
+    getline(rs, dat);
+    char deli;
+    for (int i = 0; i < nodes; ++i) {
+        int id = readTxtInt(rs, -1);
+        IAssert(id < 0, string_format("Node %d has id < 0.", id).c_str());
+        if (id <= 0) return;
+        rs.get(deli);
+        auto data = new NodeDataString();
+        data->readTxt(rs);
+        addNode(id, data);
+    }
     while (!rs.eof()) {
         int srcNId = readTxtInt(rs, -1);
         int dstNId = readTxtInt(rs, -1);
@@ -158,14 +203,14 @@ void Graph<T>::print(ostream &os) {
 }
 
 template<class T>
-bool Graph<T>::addEdge(NodeData srcData, NodeData dstData) {
+bool Graph<T>::addEdge(NodeData* srcData, NodeData* dstData) {
     int nidSrc = addNode(srcData);
     int nidDst = addNode(dstData);
     return addEdge(nidSrc, nidDst);
 }
 
 template<class T>
-bool Graph<T>::addEdgeUpsert(const int &srcNId, NodeData srcData, const int &dstNId, NodeData dstData) {
+bool Graph<T>::addEdgeUpsert(const int &srcNId, NodeData* srcData, const int &dstNId, NodeData* dstData) {
     T nSrc = getNode(srcNId);
     T nDst = getNode(dstNId);
     nSrc.setData(srcData);
