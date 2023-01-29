@@ -376,6 +376,10 @@ public:
         writeTxtChar(ws, ",");
         getData()->writeTxt(ws);
     }
+    void print(ostream &os) const {
+        os << getId() << ",";
+        getData()->print(os);
+    }
 };
 
 #endif //BIGGRAPH_NODE_H

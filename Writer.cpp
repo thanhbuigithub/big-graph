@@ -26,7 +26,7 @@ bool Writer::writeBinString(ofstream &ws, string value) {
     if (!ws || !ws.is_open() || ws.bad()) return false;
     int size = value.size();
     ws.write((char *) &size, sizeof(int));
-    ws.write((char *) &value, sizeof(char*) * size);
+    ws.write(value.c_str(), size);
     return !ws.bad();
 }
 

@@ -180,7 +180,7 @@ void Graph<T>::readTxt(ifstream &rs) {
     for (int i = 0; i < nodes; ++i) {
         int id = readTxtInt(rs, -1);
         IAssert(id < 0, string_format("Node %d has id < 0.", id).c_str());
-        if (id <= 0) return;
+        if (id < 0) return;
         rs.get(deli);
         auto data = new NodeDataString();
         data->readTxt(rs);
@@ -196,6 +196,10 @@ void Graph<T>::readTxt(ifstream &rs) {
 
 template<class T>
 void Graph<T>::print(ostream &os) {
+    for (NodeI ni = beginNI(); ni < endNI(); ni++) {
+        ni.print(os);
+        os << endl;
+    }
     for (EdgeI ei = beginEI(); ei < endEI(); ei++) {
         ei.print(os);
         os << endl;
