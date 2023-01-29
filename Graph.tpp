@@ -99,6 +99,22 @@ bool Graph<T>::addEdge(const int &srcNId, const int &dstNId) {
 }
 
 template<class T>
+bool Graph<T>::addEdge(NodeData* srcData, NodeData* dstData) {
+    int nidSrc = addNode(srcData);
+    int nidDst = addNode(dstData);
+    return addEdge(nidSrc, nidDst);
+}
+
+template<class T>
+bool Graph<T>::addEdge(const int &srcNId, NodeData* srcData, const int &dstNId, NodeData* dstData) {
+    T nSrc = getNode(srcNId);
+    T nDst = getNode(dstNId);
+    nSrc.setData(srcData);
+    nDst.setData(dstData);
+    return addEdgeUpsert(srcNId, dstNId);
+}
+
+template<class T>
 bool Graph<T>::addEdgeUpsert(const int &srcNId, const int &dstNId) {
     int newSrcNId(srcNId), newDstNId(dstNId);
     if (!isNode(srcNId)) { newSrcNId = addNode(srcNId); }
@@ -108,8 +124,8 @@ bool Graph<T>::addEdgeUpsert(const int &srcNId, const int &dstNId) {
 
 template<class T>
 void Graph<T>::delEdge(const int &srcNId, const int &dstNId) {
-    IAssert(!isNode(srcNId) || isNode(dstNId), string_format("%d or %d not a node.", srcNId, dstNId).c_str());
-    if (!isNode(srcNId) || isNode(dstNId)) return;
+    IAssert(!isNode(srcNId) || !isNode(dstNId), string_format("%d or %d not a node.", srcNId, dstNId).c_str());
+    if (!isNode(srcNId) || !isNode(dstNId)) return;
     T &srcNode = getNode(srcNId);
     if (srcNode.isOutNbrNId(dstNId)) {
         srcNode.delOutNbrNId(dstNId);
@@ -204,20 +220,4 @@ void Graph<T>::print(ostream &os) {
         ei.print(os);
         os << endl;
     }
-}
-
-template<class T>
-bool Graph<T>::addEdge(NodeData* srcData, NodeData* dstData) {
-    int nidSrc = addNode(srcData);
-    int nidDst = addNode(dstData);
-    return addEdge(nidSrc, nidDst);
-}
-
-template<class T>
-bool Graph<T>::addEdgeUpsert(const int &srcNId, NodeData* srcData, const int &dstNId, NodeData* dstData) {
-    T nSrc = getNode(srcNId);
-    T nDst = getNode(dstNId);
-    nSrc.setData(srcData);
-    nDst.setData(dstData);
-    return addEdgeUpsert(srcNId, dstNId);
 }

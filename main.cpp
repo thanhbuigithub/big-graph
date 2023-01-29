@@ -29,37 +29,38 @@ void testImportBin(UDNode* test) {
 }
 
 void testGraph() {
-    ofstream ws1("test.graph.txt", ios::out);
-    ofstream ws2("test.graph.bin", ios::out | ios::binary);
-//    ifstream rs1("test.graph.txt", ios::in);
-//    ifstream rs2("test.graph.bin", ios::in | ios::binary);
-    auto* graph = new UDGraph();
-    auto n0 = graph->addNode(new NodeDataString("AAA"));
-    auto n1 = graph->addNode(new NodeDataString("BBB"));
-    auto n2 = graph->addNode(new NodeDataString("CCC"));
-    auto n3 = graph->addNode(new NodeDataString("DDD"));
-    auto n4 = graph->addNode(new NodeDataString("EEE"));
-    auto n5 = graph->addNode(new NodeDataString("FFF"));
-    graph->addEdge(n5,n4);
-    graph->addEdge(n5,n2);
-    graph->addEdge(n3,n5);
-    graph->addEdge(n3,n4);
-    graph->addEdge(n2,n3);
-    graph->addEdge(n1,n2);
-    graph->addEdge(n0,n1);
-    graph->addEdge(n0,n5);
-    graph->writeTxt(ws1);
-    graph->writeBin(ws2);
+//    ofstream ws1("test.graph.txt", ios::out);
+//    ofstream ws2("test.graph.bin", ios::out | ios::binary);
+    ifstream rs1("test.graph.txt", ios::in);
+    ifstream rs2("test.graph.bin", ios::in | ios::binary);
+    auto* graph = new DGraph();
+//    auto n0 = graph->addNode(new NodeDataString("AAA"));
+//    auto n1 = graph->addNode(new NodeDataString("BBB"));
+//    auto n2 = graph->addNode(new NodeDataString("CCC"));
+//    auto n3 = graph->addNode(new NodeDataString("DDD"));
+//    auto n4 = graph->addNode(new NodeDataString("EEE"));
+//    auto n5 = graph->addNode(new NodeDataString("FFF"));
+//    graph->addEdge(n5,n4);
+//    graph->addEdge(n5,n2);
+//    graph->addEdge(n3,n5);
+//    graph->addEdge(n3,n4);
+//    graph->addEdge(n2,n3);
+//    graph->addEdge(n1,n2);
+//    graph->addEdge(n0,n1);
+//    graph->addEdge(n0,n5);
+//    graph->writeTxt(ws1);
+//    graph->writeBin(ws2);
 
-//    graph->readTxt(rs1);
-//    graph->print(cout);
+    graph->readTxt(rs1);
+    graph->delEdge(5, 0);
+    graph->print(cout);
 //    graph->readBin(rs2);
 //    graph->print(cout);
-//    cout << graph->isOk();
-    ws1.close();
-    ws2.close();
-//    rs1.close();
-//    rs2.close();
+    cout << graph->isOk();
+//    ws1.close();
+//    ws2.close();
+    rs1.close();
+    rs2.close();
 }
 
 int main() {
